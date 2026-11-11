@@ -66,6 +66,29 @@ database.exec(`
   );
 `);
 
+const seedAccount = database.prepare(
+  'INSERT OR IGNORE INTO accounts (id, name) VALUES (?, ?)'
+);
+seedAccount.run('personal-default', 'Personal');
+
+const seedCategory = database.prepare(
+  'INSERT OR IGNORE INTO categories (id, account_id, name, kind) VALUES (?, ?, ?, ?)'
+);
+for (const [id, name, kind] of [
+  ['expense-food', 'Alimentación', 'expense'],
+  ['expense-transport', 'Transporte', 'expense'],
+  ['expense-housing', 'Vivienda', 'expense'],
+  ['expense-health', 'Salud', 'expense'],
+  ['expense-services', 'Servicios', 'expense'],
+  ['expense-other', 'Otros', 'expense'],
+  ['income-salary', 'Salario', 'income'],
+  ['income-business', 'Negocio', 'income'],
+  ['income-investments', 'Inversiones', 'income'],
+  ['income-other', 'Otros', 'income'],
+]) {
+  seedCategory.run(id, 'personal-default', name, kind);
+}
+
 export function closeDatabase() {
   database.close();
 }

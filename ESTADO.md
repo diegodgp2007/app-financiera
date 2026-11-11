@@ -13,12 +13,14 @@
 ## Estado actual
 
 - Se inicializa el esquema SQLite para cuentas, categorías, movimientos y presupuestos.
-- Se mantienen la ruta de salud del backend y el cliente HTTP inicial del frontend.
-- Todavía no hay datos semilla, endpoints CRUD ni pantallas financieras conectadas.
+- Se crea una cuenta personal inicial con categorías sugeridas: Alimentación, Transporte, Vivienda, Salud, Servicios y Otros para gastos; Salario, Negocio, Inversiones y Otros para ingresos.
+- La API permite listar categorías y crear, consultar, editar, filtrar y eliminar movimientos.
+- Angular ofrece una pantalla responsive para gestionar movimientos, con filtros por fechas y categoría y totales del periodo cargado.
+- Los datos del backend están asociados a una cuenta inicial; la autenticación y gestión de múltiples cuentas quedan para una etapa posterior.
 
 ## Siguiente paso
 
-Definir o adoptar las categorías iniciales y construir la API de movimientos (crear, consultar, editar y eliminar), asociada a una cuenta.
+Ejecutar frontend y backend y revisar el flujo de movimientos en pantalla; después avanzar a presupuestos y resúmenes semanales/mensuales.
 
 ## Alcance acordado
 
