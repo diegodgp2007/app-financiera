@@ -8,12 +8,24 @@ export interface ApiHealth {
 }
 
 export type TransactionKind = 'income' | 'expense';
-export type PaymentMethod = 'cash' | 'card' | 'transfer' | 'other';
+export type PaymentMethod = string;
 
 export interface Category {
   id: string;
   name: string;
   kind: TransactionKind;
+  isArchived?: boolean | number;
+}
+
+export interface CategoryInput {
+  name: string;
+  kind: TransactionKind;
+}
+
+export interface PaymentMethodOption {
+  id: PaymentMethod;
+  name: string;
+  isArchived?: boolean | number;
 }
 
 export interface Transaction {
@@ -41,8 +53,48 @@ export class ApiService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = 'http://localhost:3000/api';
 
-  getCategories() {
-    return this.http.get<Category[]>(`${this.baseUrl}/categories`);
+  getCategories(includeArchived = false) {
+    return this.http.get<Category[]>(`${this.baseUrl}/categories`, {
+      params: includeArchived ? { includeArchived: 'true' } : {},
+    });
+  }
+
+  createCategory(category: CategoryInput) {
+    return this.http.post<Category>(`${this.baseUrl}/categories`, category);
+  }
+
+  updateCategory(id: string, category: Pick<CategoryInput, 'name'>) {
+    return this.http.put<Category>(`${this.baseUrl}/categories/${id}`, category);
+  }
+
+  archiveCategory(id: string) {
+    return this.http.delete<void>(`${this.baseUrl}/categories/${id}`);
+  }
+
+  restoreCategory(id: string) {
+    return this.http.patch<void>(`${this.baseUrl}/categories/${id}/restore`, {});
+  }
+
+  getPaymentMethods(includeArchived = false) {
+    return this.http.get<PaymentMethodOption[]>(`${this.baseUrl}/payment-methods`, {
+      params: includeArchived ? { includeArchived: 'true' } : {},
+    });
+  }
+
+  createPaymentMethod(name: string) {
+    return this.http.post<PaymentMethodOption>(`${this.baseUrl}/payment-methods`, { name });
+  }
+
+  updatePaymentMethod(id: string, name: string) {
+    return this.http.put<PaymentMethodOption>(`${this.baseUrl}/payment-methods/${id}`, { name });
+  }
+
+  archivePaymentMethod(id: string) {
+    return this.http.delete<void>(`${this.baseUrl}/payment-methods/${id}`);
+  }
+
+  restorePaymentMethod(id: string) {
+    return this.http.patch<void>(`${this.baseUrl}/payment-methods/${id}/restore`, {});
   }
 
   getTransactions(filters: { from?: string; to?: string; categoryId?: string; kind?: string } = {}) {

@@ -1,0 +1,37 @@
+﻿<div class="shell">
+  <main>
+    <section class="page-heading"><div><p class="eyebrow">ORGANIZA TUS MOVIMIENTOS</p><h1>Categorías</h1><p class="subtitle">Crea y administra las categorías de tus ingresos y gastos.</p></div></section>
+    @if (error) { <div class="alert" role="alert">{{ error }}</div> }
+    <div class="category-layout">
+      <section class="category-card category-form-card">
+        <div class="category-heading"><span class="kind-icon">{{ editingId ? '✎' : '+' }}</span><div><p class="eyebrow">{{ editingId ? 'EDITAR CATEGORÍA' : 'NUEVA CATEGORÍA' }}</p><h2>{{ editingId ? 'Actualizar nombre' : 'Agregar categoría' }}</h2></div></div>
+        <form (ngSubmit)="save()">
+          <label class="field-label" for="category-name">Nombre</label>
+          <input id="category-name" name="categoryName" type="text" maxlength="60" [(ngModel)]="form.name" placeholder="Ej. Educación" required>
+          <label class="field-label" for="category-kind">Tipo</label>
+          <select id="category-kind" name="categoryKind" [(ngModel)]="form.kind" [disabled]="!!editingId"><option value="expense">Gasto</option><option value="income">Ingreso</option></select>
+          <button class="submit-button" type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : editingId ? 'Guardar cambios' : 'Crear categoría' }}</button>
+          @if (editingId) { <button class="text-button cancel-category" type="button" (click)="cancelEdit()">Cancelar edición</button> }
+        </form>
+      </section>
+      <section class="category-list">
+        <div class="category-card">
+          <div class="category-heading"><span class="kind-icon expense">↘</span><div><p class="eyebrow">SALIDAS DE DINERO</p><h2>Gastos</h2></div><span class="category-count">{{ byKind('expense').length }}</span></div>
+          @for (category of byKind('expense'); track category.id) { <div class="category-item"><span class="category-dot expense"></span><span class="category-name">{{ category.name }}</span><div class="category-actions"><button type="button" title="Editar" (click)="edit(category)">Editar</button><button type="button" title="Archivar" (click)="archive(category)">Archivar</button></div></div> }
+          @if (!byKind('expense').length) { <p class="empty-categories">No hay categorías activas de gastos.</p> }
+        </div>
+        <div class="category-card">
+          <div class="category-heading"><span class="kind-icon income">↗</span><div><p class="eyebrow">ENTRADAS DE DINERO</p><h2>Ingresos</h2></div><span class="category-count">{{ byKind('income').length }}</span></div>
+          @for (category of byKind('income'); track category.id) { <div class="category-item"><span class="category-dot income"></span><span class="category-name">{{ category.name }}</span><div class="category-actions"><button type="button" title="Editar" (click)="edit(category)">Editar</button><button type="button" title="Archivar" (click)="archive(category)">Archivar</button></div></div> }
+          @if (!byKind('income').length) { <p class="empty-categories">No hay categorías activas de ingresos.</p> }
+        </div>
+      </section>
+    </div>
+    @if (archivedCategories.length) {
+      <section class="category-card archived-card"><div class="category-heading"><div><p class="eyebrow">CATEGORÍAS INACTIVAS</p><h2>Archivadas</h2></div></div>
+        @for (category of archivedCategories; track category.id) { <div class="category-item archived-item"><span class="category-name">{{ category.name }} <small>{{ category.kind === 'income' ? 'Ingreso' : 'Gasto' }}</small></span><button type="button" (click)="restore(category)">Restaurar</button></div> }
+      </section>
+    }
+    <p class="module-note">Archivar una categoría conserva los movimientos registrados con ella.</p>
+  </main>
+</div>

@@ -1,127 +1,41 @@
-<div class="shell">
-  <header class="topbar">
-    <a class="brand" href="/" aria-label="Inicio">
-      <span class="brand-mark">₱</span>
-      <span>cuenta<span class="brand-light">clara</span></span>
-    </a>
-    <div class="topbar-note"><span class="status-dot"></span> Tus finanzas, en orden</div>
-  </header>
-
+﻿<div class="shell">
   <main>
     <section class="page-heading">
-      <div>
-        <p class="eyebrow">ESPACIO PERSONAL</p>
-        <h1>Movimientos</h1>
-        <p class="subtitle">Registra y consulta tus ingresos y gastos.</p>
-      </div>
+      <div><p class="eyebrow">ESPACIO PERSONAL</p><h1>Movimientos</h1><p class="subtitle">Consulta y administra tus ingresos y gastos.</p></div>
       <div class="month-label">COP <span>·</span> Pesos colombianos</div>
     </section>
 
     <section class="summary-grid" aria-label="Resumen de movimientos filtrados">
-      <article class="summary-card balance-card">
-        <span class="summary-label">Balance del periodo</span>
-        <strong>{{ formatMoney(incomeTotal - expenseTotal) }}</strong>
-        <span class="summary-foot">Ingresos menos gastos</span>
-        <span class="card-orbit orbit-one"></span><span class="card-orbit orbit-two"></span>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label"><i class="summary-icon income-icon">↗</i> Ingresos</span>
-        <strong>{{ formatMoney(incomeTotal) }}</strong>
-        <span class="summary-foot">En el periodo seleccionado</span>
-      </article>
-      <article class="summary-card">
-        <span class="summary-label"><i class="summary-icon expense-icon">↘</i> Gastos</span>
-        <strong>{{ formatMoney(expenseTotal) }}</strong>
-        <span class="summary-foot">En el periodo seleccionado</span>
-      </article>
+      <article class="summary-card balance-card"><span class="summary-label">Balance del periodo</span><strong>{{ incomeTotal - expenseTotal | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</strong><span class="summary-foot">Ingresos menos gastos</span><span class="card-orbit orbit-one"></span><span class="card-orbit orbit-two"></span></article>
+      <article class="summary-card"><span class="summary-label"><i class="summary-icon income-icon">↗</i> Ingresos</span><strong>{{ incomeTotal | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</strong><span class="summary-foot">En el periodo seleccionado</span></article>
+      <article class="summary-card"><span class="summary-label"><i class="summary-icon expense-icon">↘</i> Gastos</span><strong>{{ expenseTotal | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</strong><span class="summary-foot">En el periodo seleccionado</span></article>
     </section>
 
     @if (error) { <div class="alert" role="alert">{{ error }}</div> }
-    @if (successMessage) {
-      <div class="modal-backdrop">
-        <section class="success-modal" role="dialog" aria-modal="true" aria-labelledby="save-modal-title" aria-describedby="save-modal-description">
-          <span class="modal-check">✓</span>
-          <p class="eyebrow">MOVIMIENTO REGISTRADO</p>
-          <h2 id="save-modal-title">¡Listo!</h2>
-          <p id="save-modal-description">{{ successMessage }}</p>
-          <button type="button" (click)="confirmSaved()">Aceptar y actualizar lista</button>
-        </section>
+
+    <section class="panel list-panel">
+      <div class="panel-heading list-heading"><div><p class="eyebrow">TU ACTIVIDAD</p><h2>Historial</h2></div><span class="count-pill">{{ transactions.length }} registros</span></div>
+      <div class="filters">
+        <label><span>Desde</span><input aria-label="Fecha desde" type="date" [(ngModel)]="from" (ngModelChange)="loadTransactions()"></label>
+        <label><span>Hasta</span><input aria-label="Fecha hasta" type="date" [(ngModel)]="to" (ngModelChange)="loadTransactions()"></label>
+        <label class="category-filter"><span>Categoría</span><select aria-label="Filtrar por categoría" [(ngModel)]="categoryFilter" (ngModelChange)="loadTransactions()"><option value="">Todas</option>@for (category of categories; track category.id) { <option [value]="category.id">{{ category.name }}</option> }</select></label>
       </div>
-    }
-
-    <div class="workspace">
-      <section class="panel form-panel">
-        <div class="panel-heading">
-          <div>
-            <p class="eyebrow">{{ editingId ? 'ACTUALIZAR REGISTRO' : 'NUEVO REGISTRO' }}</p>
-            <h2>{{ editingId ? 'Editar movimiento' : 'Añadir movimiento' }}</h2>
-          </div>
-          @if (editingId) { <button class="text-button" type="button" (click)="cancelEdit()">Cancelar</button> }
+      @if (transactions.length) {
+        <div class="transaction-list">
+          @for (transaction of transactions; track transaction.id) {
+            <article class="transaction-row">
+              <div class="transaction-symbol" [class.income-symbol]="transaction.kind === 'income'">{{ transaction.kind === 'income' ? '↗' : '↘' }}</div>
+              <div class="transaction-info"><strong>{{ transaction.description || transaction.categoryName }}</strong><span>{{ transaction.categoryName }} <i>·</i> {{ transaction.date | date:'d MMM y':'':'es-CO' }}</span></div>
+              <div class="transaction-amount" [class.income-amount]="transaction.kind === 'income'">{{ transaction.kind === 'income' ? '+' : '−' }}{{ transaction.amount | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</div>
+              <div class="row-actions"><button type="button" aria-label="Editar movimiento" title="Editar" (click)="editTransaction(transaction)">✎</button><button type="button" aria-label="Eliminar movimiento" title="Eliminar" (click)="deleteTransaction(transaction)">×</button></div>
+            </article>
+          }
         </div>
-
-        <div class="type-switch" role="group" aria-label="Tipo de movimiento">
-          <button type="button" [class.selected-expense]="kind === 'expense'" (click)="setKind('expense')">Gasto</button>
-          <button type="button" [class.selected-income]="kind === 'income'" (click)="setKind('income')">Ingreso</button>
-        </div>
-
-        <form (ngSubmit)="saveTransaction()">
-          <label class="field-label" for="amount">Valor</label>
-          <div class="amount-input"><span>$</span><input id="amount" name="amount" type="number" min="1" step="1" placeholder="0" [(ngModel)]="form.amount" required></div>
-
-          <div class="field-row">
-            <div class="field">
-              <label class="field-label" for="date">Fecha</label>
-              <input id="date" name="date" type="date" [(ngModel)]="form.date" required>
-            </div>
-            <div class="field">
-              <label class="field-label" for="category">Categoría</label>
-              <select id="category" name="categoryId" [(ngModel)]="form.categoryId" required>
-                @for (category of visibleCategories; track category.id) { <option [value]="category.id">{{ category.name }}</option> }
-              </select>
-            </div>
-          </div>
-
-          <label class="field-label" for="description">Descripción <span class="optional">· Opcional</span></label>
-          <input id="description" name="description" type="text" maxlength="160" placeholder="¿En qué consistió?" [(ngModel)]="form.description">
-
-          <label class="field-label" for="payment">Medio de pago <span class="optional">· Opcional</span></label>
-          <select id="payment" name="paymentMethod" [(ngModel)]="form.paymentMethod">
-            <option value="">Sin especificar</option><option value="cash">Efectivo</option><option value="card">Tarjeta</option><option value="transfer">Transferencia</option><option value="other">Otro</option>
-          </select>
-
-          <button class="submit-button" type="submit" [disabled]="saving || !form.categoryId">{{ saving ? 'Guardando…' : editingId ? 'Guardar cambios' : 'Guardar movimiento' }} <span>→</span></button>
-        </form>
-      </section>
-
-      <section class="panel list-panel">
-        <div class="panel-heading list-heading">
-          <div><p class="eyebrow">TU ACTIVIDAD</p><h2>Historial</h2></div>
-          <span class="count-pill">{{ transactions.length }} registros</span>
-        </div>
-
-        <div class="filters">
-          <label><span>Desde</span><input aria-label="Fecha desde" type="date" [(ngModel)]="from" (ngModelChange)="loadTransactions()"></label>
-          <label><span>Hasta</span><input aria-label="Fecha hasta" type="date" [(ngModel)]="to" (ngModelChange)="loadTransactions()"></label>
-          <label class="category-filter"><span>Categoría</span><select aria-label="Filtrar por categoría" [(ngModel)]="categoryFilter" (ngModelChange)="loadTransactions()"><option value="">Todas</option>@for (category of categories; track category.id) { <option [value]="category.id">{{ category.name }}</option> }</select></label>
-        </div>
-
-        @if (transactions.length) {
-          <div class="transaction-list">
-            @for (transaction of transactions; track transaction.id) {
-              <article class="transaction-row">
-                <div class="transaction-symbol" [class.income-symbol]="transaction.kind === 'income'">{{ transaction.kind === 'income' ? '↗' : '↘' }}</div>
-                <div class="transaction-info"><strong>{{ transaction.description || transaction.categoryName }}</strong><span>{{ transaction.categoryName }} <i>·</i> {{ transaction.date | date:'d MMM y':'':'es-CO' }}</span></div>
-                <div class="transaction-amount" [class.income-amount]="transaction.kind === 'income'">{{ transaction.kind === 'income' ? '+' : '−' }}{{ transaction.amount | currency:'COP':'symbol-narrow':'1.0-0':'es-CO' }}</div>
-                <div class="row-actions"><button type="button" aria-label="Editar movimiento" title="Editar" (click)="editTransaction(transaction)">✎</button><button type="button" aria-label="Eliminar movimiento" title="Eliminar" (click)="deleteTransaction(transaction)">×</button></div>
-              </article>
-            }
-          </div>
-        } @else {
-          <div class="empty-state"><span class="empty-icon">↗</span><strong>Aún no hay movimientos</strong><p>Cuando registres uno, aparecerá aquí.</p></div>
-        }
-        <div class="list-footer"><span class="status-dot"></span> Los datos se guardan en tu base local</div>
-      </section>
-    </div>
+      } @else {
+        <div class="empty-state"><span class="empty-icon">↗</span><strong>Aún no hay movimientos</strong><p>Cuando registres uno, aparecerá aquí.</p></div>
+      }
+      <div class="list-footer"><span class="status-dot"></span> Los datos se guardan en tu base local</div>
+    </section>
     <footer>Una vista más clara de tu dinero, un paso a la vez.</footer>
   </main>
 </div>

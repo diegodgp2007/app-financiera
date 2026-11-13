@@ -1,0 +1,36 @@
+:host { display: block; }
+.shell { min-height: calc(100vh - 122px); background: #f5f6f3; color: #202820; }
+main { max-width: 1250px; margin: auto; padding: 43px 28px 22px; }
+.eyebrow { margin: 0 0 8px; color: #849087; font-size: 9px; font-weight: 750; letter-spacing: 1.45px; }
+h1 { margin: 0; font-family: Georgia, serif; font-size: 38px; font-weight: 500; letter-spacing: -1.2px; }
+.subtitle { margin: 8px 0 0; color: #818981; font-size: 13px; }
+.category-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 28px; }
+.category-card { padding: 21px 23px; border: 1px solid #e8ece5; border-radius: 11px; background: #fff; }
+.category-heading { display: flex; align-items: center; gap: 12px; padding-bottom: 16px; margin-bottom: 4px; border-bottom: 1px solid #eef0ec; }
+.category-heading .eyebrow { margin-bottom: 4px; font-size: 8px; }
+.category-heading h2 { margin: 0; color: #26342a; font-size: 16px; font-weight: 600; }
+.kind-icon { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 11px; font-size: 17px; }
+.kind-icon.expense,.category-dot.expense { background: #fff0e9; color: #bc704a; }
+.kind-icon.income,.category-dot.income { background: #e9f5ec; color: #36875a; }
+.category-count { margin-left: auto; padding: 5px 9px; border-radius: 18px; background: #f3f5f1; color: #778178; font-size: 10px; }
+.category-item { display: flex; align-items: center; gap: 11px; min-height: 42px; border-bottom: 1px solid #f1f2ef; color: #49544b; font-size: 12px; }
+.category-dot { width: 8px; height: 8px; border-radius: 50%; }
+.empty-categories,.module-note { color: #89938a; font-size: 11px; }
+.module-note { margin-top: 18px; }
+@media (max-width: 680px) { main { padding: 30px 16px 15px; }.category-columns { grid-template-columns: 1fr; gap: 12px; }.category-card { padding: 18px; } }
+.category-layout { display: grid; grid-template-columns: minmax(245px, 310px) minmax(0, 1fr); align-items: start; gap: 16px; margin-top: 28px; }
+.category-form-card { padding: 21px; }
+.category-form-card .category-heading { margin-bottom: 17px; }
+.category-form-card .kind-icon { background: #edf5ef; color: #397451; }
+.category-form-card input,.category-form-card select { margin-bottom: 15px; }
+.category-form-card .submit-button { width: 100%; padding: 0 12px; }
+.category-list { display: grid; gap: 14px; }
+.category-name { min-width: 0; flex: 1; }
+.category-actions { display: flex; gap: 5px; }
+.category-actions button,.archived-item button { border: 0; border-radius: 5px; padding: 6px 8px; background: #f3f5f1; color: #5f7264; cursor: pointer; font-size: 9px; }
+.category-actions button:hover,.archived-item button:hover { background: #e8f0e9; color: #1a5239; }
+.cancel-category { width: 100%; margin-top: 8px; }
+.archived-card { margin-top: 15px; }
+.archived-card .category-heading { margin-bottom: 4px; }
+.archived-item small { margin-left: 7px; color: #8b948b; font-size: 9px; }
+@media (max-width: 760px) { .category-layout { grid-template-columns: 1fr; gap: 12px; }.category-form-card { padding: 18px; } }

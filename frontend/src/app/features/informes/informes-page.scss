@@ -1,0 +1,13 @@
+:host { display: block; }
+.shell { min-height: calc(100vh - 122px); background: #f5f6f3; color: #202820; }
+main { max-width: 1250px; margin: auto; padding: 43px 28px 22px; }
+.eyebrow { margin: 0 0 8px; color: #849087; font-size: 9px; font-weight: 750; letter-spacing: 1.45px; }
+h1 { margin: 0; font-family: Georgia, serif; font-size: 38px; font-weight: 500; letter-spacing: -1.2px; }
+.subtitle { color: #818981; margin: 8px 0 0; font-size: 13px; }
+.coming-soon { min-height: 430px; }
+.coming-card { display: flex; align-items: center; gap: 17px; margin-top: 34px; padding: 24px; border: 1px solid #e8ece5; border-radius: 12px; background: #fff; box-shadow: 0 5px 16px #1d332008; }
+.coming-icon { display: grid; place-items: center; width: 46px; height: 46px; flex: 0 0 auto; border-radius: 13px; background: #edf5ef; color: #397451; font-size: 21px; }
+.coming-card strong { color: #2d3a30; font-size: 13px; }
+.coming-card p { margin: 6px 0 0; color: #818981; font-size: 11px; line-height: 1.6; }
+.coming-badge { margin-left: auto; padding: 7px 10px; border-radius: 20px; background: #f2f5f0; color: #718174; font-size: 8px; font-weight: 700; letter-spacing: .7px; white-space: nowrap; }
+@media (max-width: 680px) { main { padding: 30px 16px 15px; }.coming-card { align-items: flex-start; padding: 18px; flex-wrap: wrap; }.coming-card > div { flex: 1 1 calc(100% - 65px); }.coming-badge { margin-left: 63px; } }

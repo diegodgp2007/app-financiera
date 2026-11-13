@@ -1,0 +1,46 @@
+<div class="shell">
+  <main>
+    <section class="page-heading">
+      <div><p class="eyebrow">{{ editingId ? 'ACTUALIZAR REGISTRO' : 'NUEVO REGISTRO' }}</p><h1>{{ editingId ? 'Editar movimiento' : 'Agregar movimiento' }}</h1><p class="subtitle">Registra un ingreso o gasto en tu historial.</p></div>
+      <div class="month-label">COP <span>·</span> Pesos colombianos</div>
+    </section>
+
+    @if (error) { <div class="alert" role="alert">{{ error }}</div> }
+    @if (successMessage) {
+      <div class="modal-backdrop">
+        <section class="success-modal" role="dialog" aria-modal="true" aria-labelledby="save-modal-title" aria-describedby="save-modal-description">
+          <span class="modal-check">✓</span><p class="eyebrow">MOVIMIENTO REGISTRADO</p><h2 id="save-modal-title">¡Listo!</h2>
+          <p id="save-modal-description">{{ successMessage }}</p><button type="button" (click)="confirmSaved()">Aceptar y volver al historial</button>
+        </section>
+      </div>
+    }
+
+    <div class="add-workspace">
+      <section class="panel form-panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">{{ editingId ? 'ACTUALIZAR REGISTRO' : 'DETALLES DEL REGISTRO' }}</p><h2>{{ editingId ? 'Editar movimiento' : 'Nuevo movimiento' }}</h2></div>
+          @if (editingId) { <button class="text-button" type="button" (click)="cancelEdit()">Cancelar</button> }
+        </div>
+        <div class="type-switch" role="group" aria-label="Tipo de movimiento">
+          <button type="button" [class.selected-expense]="kind === 'expense'" (click)="setKind('expense')">Gasto</button>
+          <button type="button" [class.selected-income]="kind === 'income'" (click)="setKind('income')">Ingreso</button>
+        </div>
+        <form (ngSubmit)="saveTransaction()">
+          <label class="field-label" for="amount">Valor</label>
+          <div class="amount-input"><span>$</span><input id="amount" name="amount" type="number" min="1" step="1" placeholder="0" [(ngModel)]="form.amount" required></div>
+          <div class="field-row">
+            <div class="field"><label class="field-label" for="date">Fecha</label><input id="date" name="date" type="date" [(ngModel)]="form.date" required></div>
+            <div class="field"><label class="field-label" for="category">Categoría</label><select id="category" name="categoryId" [(ngModel)]="form.categoryId" required>@for (category of visibleCategories; track category.id) { <option [value]="category.id">{{ category.name }}</option> }</select></div>
+          </div>
+          <label class="field-label" for="description">Descripción <span class="optional">· Opcional</span></label>
+          <input id="description" name="description" type="text" maxlength="160" placeholder="¿En qué consistió?" [(ngModel)]="form.description">
+          <label class="field-label" for="payment">Medio de pago <span class="optional">· Opcional</span></label>
+          <select id="payment" name="paymentMethod" [(ngModel)]="form.paymentMethod"><option value="">Sin especificar</option>@for (method of paymentMethods; track method.id) { <option [value]="method.id" [disabled]="!!method.isArchived && form.paymentMethod !== method.id">{{ method.name }}{{ method.isArchived ? ' (archivado)' : '' }}</option> }</select>
+          <button class="submit-button" type="submit" [disabled]="saving || !form.categoryId">{{ saving ? 'Guardando…' : editingId ? 'Guardar cambios' : 'Guardar movimiento' }} <span>→</span></button>
+        </form>
+      </section>
+      <aside class="add-hint"><span class="hint-icon">✦</span><strong>Un registro claro</strong><p>Elige el tipo, la categoría y el medio de pago para mantener tu historial organizado.</p><span class="hint-currency">{{ formatMoney(0) }} <small>Moneda de tus movimientos</small></span></aside>
+    </div>
+    <footer>Una vista más clara de tu dinero, un paso a la vez.</footer>
+  </main>
+</div>

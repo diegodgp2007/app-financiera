@@ -1,0 +1,23 @@
+﻿<div class="shell">
+  <main>
+    <section class="page-heading"><div><p class="eyebrow">CONFIGURACIÓN DE MOVIMIENTOS</p><h1>Medios de pago</h1><p class="subtitle">Agrega y administra las opciones al registrar tus movimientos.</p></div></section>
+    @if (error) { <div class="alert" role="alert">{{ error }}</div> }
+    <div class="payment-layout">
+      <section class="payment-form-card">
+        <div class="payment-heading"><span class="payment-icon">{{ editingId ? '✎' : '+' }}</span><div><p class="eyebrow">{{ editingId ? 'EDITAR MEDIO' : 'NUEVO MEDIO' }}</p><h2>{{ editingId ? 'Actualizar nombre' : 'Agregar medio de pago' }}</h2></div></div>
+        <form (ngSubmit)="save()"><label class="field-label" for="payment-name">Nombre</label><input id="payment-name" name="paymentName" type="text" maxlength="60" [(ngModel)]="name" placeholder="Ej. Billetera digital" required><button class="submit-button" type="submit" [disabled]="saving">{{ saving ? 'Guardando…' : editingId ? 'Guardar cambios' : 'Crear medio de pago' }}</button>@if (editingId) { <button class="text-button cancel-payment" type="button" (click)="cancelEdit()">Cancelar edición</button> }</form>
+      </section>
+      <section class="payment-list">
+        @for (method of activeMethods; track method.id) {
+          <article class="payment-card"><span class="payment-icon">{{ method.name.slice(0, 1).toUpperCase() }}</span><div class="payment-info"><h2>{{ method.name }}</h2><p>Disponible para nuevos movimientos.</p></div><div class="payment-actions"><button type="button" (click)="edit(method)">Editar</button><button type="button" (click)="archive(method)">Archivar</button></div></article>
+        } @empty { @if (!error) { <div class="empty-payment">No hay medios de pago activos.</div> } }
+      </section>
+    </div>
+    @if (archivedMethods.length) {
+      <section class="archived-payment"><div class="payment-heading"><div><p class="eyebrow">OPCIONES INACTIVAS</p><h2>Archivados</h2></div></div>
+        @for (method of archivedMethods; track method.id) { <div class="archived-row"><span>{{ method.name }}</span><button type="button" (click)="restore(method)">Restaurar</button></div> }
+      </section>
+    }
+    <p class="module-note">Archivar un medio no modifica los movimientos que ya lo usan.</p>
+  </main>
+</div>
